@@ -191,6 +191,7 @@ function postafact(message){
       channel: message.channel
     }
   );
+}
 
 //I want to know when the bot shuts down. I thought it would stay up forever.
 controller.on('rtm_close', function(bot,message){
