@@ -129,14 +129,59 @@ var strings =
 'One of her dreams is to be on the Ellen show.',
 'Kanye West once robbed Taylor\'s mic during the VMA award show.;']
 
+//a date in the past, so that a fact gets posted when the bot is started
+var datelastfactposted=new Date("October 13, 2014 11:13:00");
+
+//I think this is also a bit poor - checks every 'tick' if it's ok to post a fact, even though it will only be OK once a day.
+controller.on('tick',function(bot,message){
+  if(checkifitsOKtopostafactnow()){
+    postdailyfact();
+  }
+});
 
 //if i hear the word 'fact', that's when I post a fact
 controller.hears(['fact'],'direct_mention,mention',function(bot,message){
       postafact(message);
 });
 
+//this was useful for testing, leaving it there incase
+/*controller.hears(['fact'],'direct_mention,mention',function(bot,message){
 
-//actually posts the fact.
+    if(checkifitsOKtopostafactnow()){
+    for(i=0;i<10;i++){
+      postafact();
+    }
+  }
+});*/
+
+//checks if it is OK to post a fact based on criteria. We only want one a day.
+function checkifitsOKtopostafactnow(){
+  //only want to post a fact if it's after noon
+  //and if there hasn't already been one posted today
+  //there's probably a less awful way to do this but /shrug
+  var currenthour=new Date().getHours();
+  if(currenthour>11&&datelastfactposted.getDate()!=new Date().getDate()){
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+//post a fact of the day
+function postdailyfact(){
+  var randomnumber=Math.floor(Math.random()*strings.length);
+  var fact=strings[randomnumber];
+  bot.say(
+    {
+      text: "*Taylor Swift Fact of the Day:*\n"+fact,
+      channel: message.channel
+    }
+  );
+  datelastfactposted=new Date();
+}
+
+//post a fact on demand
 function postafact(message){
   var randomnumber=Math.floor(Math.random()*strings.length);
   var fact=strings[randomnumber];
@@ -146,7 +191,6 @@ function postafact(message){
       channel: message.channel
     }
   );
-}
 
 //I want to know when the bot shuts down. I thought it would stay up forever.
 controller.on('rtm_close', function(bot,message){
@@ -175,7 +219,7 @@ controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', funct
 
     controller.storage.users.get(message.user, function(err, user) {
         if (user && user.name) {
-            bot.reply(message, 'Hello ' + user.name + '!!');
+            bot.reply(message, "I've got a blank space, ' + user.name + ', and I'll write your name!!");
         } else {
             bot.reply(message, 'Hello.');
         }
@@ -191,7 +235,7 @@ controller.hears(['shutdown'], 'direct_message,direct_mention,mention', function
             {
                 pattern: bot.utterances.yes,
                 callback: function(response, convo) {
-                    convo.say('Bye!');
+                    convo.say("Now we've got bad blood...");
                     convo.next();
                     setTimeout(function() {
                         process.exit();

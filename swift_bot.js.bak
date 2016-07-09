@@ -129,51 +129,23 @@ var strings =
 'One of her dreams is to be on the Ellen show.',
 'Kanye West once robbed Taylor\'s mic during the VMA award show.;']
 
-//a date in the past, so that a fact gets posted when the bot is started
-var datelastfactposted=new Date("October 13, 2014 11:13:00");
 
-//I think this is also a bit poor - checks every 'tick' if it's ok to post a fact, even though it will only be OK once a day.
-controller.on('tick',function(bot,message){
-  if(checkifitsOKtopostafactnow()){
-    postafact();
-  }
+//if i hear the word 'fact', that's when I post a fact
+controller.hears(['fact'],'direct_mention,mention',function(bot,message){
+      postafact(message);
 });
 
-//this was useful for testing, leaving it there incase
-/*controller.hears(['fact'],'direct_mention,mention',function(bot,message){
-
-    if(checkifitsOKtopostafactnow()){
-    for(i=0;i<10;i++){
-      postafact();
-    }
-  }
-});*/
-
-//checks if it is OK to post a fact based on criteria. We only want one a day.
-function checkifitsOKtopostafactnow(){
-  //only want to post a fact if it's after noon
-  //and if there hasn't already been one posted today
-  //there's probably a less awful way to do this but /shrug
-  var currenthour=new Date().getHours();
-  if(currenthour>11&&datelastfactposted.getDate()!=new Date().getDate()){
-    return true;
-  }
-  else {
-    return false;
-  }
-}
 
 //actually posts the fact.
-function postafact(){
+function postafact(message){
   var randomnumber=Math.floor(Math.random()*strings.length);
   var fact=strings[randomnumber];
   bot.say(
     {
-      text: "*Taylor Swift Fact of the Day:*\n"+fact,
-      channel: 'C14Q7CKDG'
+      text: "*Here's a fun fact about Taylor Swift:*\n"+fact,
+      channel: message.channel
     }
   );
-  datelastfactposted=new Date();
 }
 
 //I want to know when the bot shuts down. I thought it would stay up forever.
@@ -181,7 +153,7 @@ controller.on('rtm_close', function(bot,message){
   bot.say(
     {
       text: "Bye",
-      channel: 'G17DFHN2V'
+      channel: message.channel
     }
   )
 })
