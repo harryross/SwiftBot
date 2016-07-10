@@ -144,6 +144,7 @@ controller.hears(['fact'],'direct_mention,mention',function(bot,message){
       postafact(message);
 });
 
+controller.on('')
 //this was useful for testing, leaving it there incase
 /*controller.hears(['fact'],'direct_mention,mention',function(bot,message){
 
@@ -175,7 +176,7 @@ function postdailyfact(){
   bot.say(
     {
       text: "*Taylor Swift Fact of the Day:*\n"+fact,
-      channel: message.channel
+      channel: 'C1HM69NBE'
     }
   );
   datelastfactposted=new Date();
